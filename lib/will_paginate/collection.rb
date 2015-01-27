@@ -1,6 +1,29 @@
 require 'will_paginate/per_page'
 
 module WillPaginate
+
+  module CollectionMethods
+    def total_pages
+      total_entries.zero? ? 1 : (total_entries / per_page.to_f).ceil
+    end
+
+    # current_page - 1 or nil if there is no previous page
+    def previous_page
+      current_page > 1 ? (current_page - 1) : nil
+    end
+
+    # current_page + 1 or nil if there is no next page
+    def next_page
+      current_page < total_pages ? (current_page + 1) : nil
+    end
+
+    # Helper method that is true when someone tries to fetch a page with a
+    # larger number than the last page. Can be used in combination with flashes
+    # and redirecting.
+    def out_of_bounds?
+      current_page > total_pages
+    end
+  end
   # = Invalid page number error
   # This is an ArgumentError raised in case a page was requested that is either
   # zero or negative number. You should decide how do deal with such errors in
